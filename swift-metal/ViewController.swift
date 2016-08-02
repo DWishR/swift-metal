@@ -9,6 +9,9 @@
 import UIKit
 import Metal
 import QuartzCore
+import GLKit
+
+let PI:Float = 3.141592654
 
 class ViewController: UIViewController
 {
@@ -24,6 +27,9 @@ class ViewController: UIViewController
         0,0,1
     ]
     
+    var scales:[Float] = [ 1,1,1 ]
+    var direction:Double = -1
+    
     var device: MTLDevice! = nil
     var metalLayer: CAMetalLayer! = nil
     
@@ -32,11 +38,14 @@ class ViewController: UIViewController
     var pipelineState: MTLRenderPipelineState! = nil
     var commandQueue: MTLCommandQueue! = nil
     
-    
     var timer: CADisplayLink! = nil
+    var last: CFTimeInterval! = nil
+    
+    var rot = GLKQuaternionMakeWithAngleAndAxis(PI, 0.707106781186548, 0.707106781186548, 0)
     
     override func viewDidLoad()
     {
+        view.contentScaleFactor = UIScreen.mainScreen().nativeScale
         super.viewDidLoad()
         device = MTLCreateSystemDefaultDevice()
         
@@ -45,6 +54,10 @@ class ViewController: UIViewController
         metalLayer.pixelFormat = .BGRA8Unorm
         metalLayer.framebufferOnly = true
         metalLayer.frame = view.layer.frame
+        var size = view.bounds.size
+        size.width *= view.contentScaleFactor
+        size.height *= view.contentScaleFactor
+        metalLayer.drawableSize = size
         view.layer.addSublayer(metalLayer)
         
         let vSize = vertexData.count * sizeof(Float)
@@ -72,10 +85,9 @@ class ViewController: UIViewController
     override func didReceiveMemoryWarning()
     {
         super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
     }
 
-    func render()
+    func render(delta:CFTimeInterval)
     {
         let drawable = metalLayer.nextDrawable()
         let renderPassDescriptor = MTLRenderPassDescriptor()
@@ -89,18 +101,32 @@ class ViewController: UIViewController
         renderEncoder.setRenderPipelineState(pipelineState)
         renderEncoder.setVertexBuffer(vertexBuffer, offset: 0, atIndex: 0)
         renderEncoder.setVertexBuffer(colorBuffer, offset: 0, atIndex: 1)
+        renderEncoder.setVertexBytes(scales, length: scales.count*sizeof(Float), atIndex: 2)
         renderEncoder.drawPrimitives(.Triangle, vertexStart: 0, vertexCount: 3)
         renderEncoder.endEncoding()
         
         commandBuffer.presentDrawable(drawable!)
         commandBuffer.commit()
+        
+        let vec = GLKVector3Make(scales[0], scales[1], scales[2])
+        let rotated = GLKQuaternionRotateVector3(GLKQuaternionSlerp(GLKQuaternionIdentity, rot, Float(delta)), vec)
+        print("Rotated Vector: \(rotated); x:\(rotated.x), y:\(rotated.y), z:\(rotated.z)")
+        scales[0] = rotated.x
+        scales[1] = rotated.y
+        scales[2] = rotated.z
     }
     
     func tick()
     {
         autoreleasepool
         {
-            render()
+            if((last == nil))
+            {
+                last = timer.timestamp
+            }
+            
+            render(timer.timestamp - last)
+            last = timer.timestamp
         }
     }
 }
