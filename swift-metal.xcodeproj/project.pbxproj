@@ -12,6 +12,7 @@
 		77FC05B21D501A1D006670F8 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 77FC05B01D501A1D006670F8 /* Main.storyboard */; };
 		77FC05B41D501A1D006670F8 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 77FC05B31D501A1D006670F8 /* Assets.xcassets */; };
 		77FC05B71D501A1D006670F8 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 77FC05B51D501A1D006670F8 /* LaunchScreen.storyboard */; };
+		77FC05BF1D5023AE006670F8 /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 77FC05BE1D5023AE006670F8 /* Shaders.metal */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -22,6 +23,7 @@
 		77FC05B31D501A1D006670F8 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		77FC05B61D501A1D006670F8 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		77FC05B81D501A1D006670F8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		77FC05BE1D5023AE006670F8 /* Shaders.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -56,6 +58,7 @@
 			children = (
 				77FC05AC1D501A1D006670F8 /* AppDelegate.swift */,
 				77FC05AE1D501A1D006670F8 /* ViewController.swift */,
+				77FC05BE1D5023AE006670F8 /* Shaders.metal */,
 				77FC05B01D501A1D006670F8 /* Main.storyboard */,
 				77FC05B31D501A1D006670F8 /* Assets.xcassets */,
 				77FC05B51D501A1D006670F8 /* LaunchScreen.storyboard */,
@@ -96,6 +99,7 @@
 				TargetAttributes = {
 					77FC05A81D501A1D006670F8 = {
 						CreatedOnToolsVersion = 7.3.1;
+						DevelopmentTeam = P88ALT35M9;
 					};
 				};
 			};
@@ -135,6 +139,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				77FC05BF1D5023AE006670F8 /* Shaders.metal in Sources */,
 				77FC05AF1D501A1D006670F8 /* ViewController.swift in Sources */,
 				77FC05AD1D501A1D006670F8 /* AppDelegate.swift in Sources */,
 			);
@@ -251,10 +256,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = "swift-metal/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.dwishr.swift-metal";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 			};
 			name = Debug;
 		};
@@ -262,10 +270,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = "swift-metal/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.dwishr.swift-metal";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 			};
 			name = Release;
 		};
@@ -288,6 +299,7 @@
 				77FC05BD1D501A1D006670F8 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
