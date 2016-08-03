@@ -18,12 +18,11 @@ struct VertexOutput
 vertex VertexOutput basic_vertex(
         const device packed_float3* vertex_array [[ buffer(0) ]],
         const device packed_float3* color_array [[ buffer(1) ]],
-        const device packed_float3* scales [[ buffer(2) ]],
         uint vid [[ vertex_id ]])
 {
     VertexOutput vo;
-    vo.position = float4(vertex_array[vid]*scales[0], 1);
-    vo.color = half4(color_array[vid][0], color_array[vid][1], color_array[vid][2],1);
+    vo.position = float4(vertex_array[vid], 1);
+    vo.color = float4(color_array[vid][0], color_array[vid][1], color_array[vid][2],1);
     return vo;
 }
 

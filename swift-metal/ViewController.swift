@@ -15,10 +15,16 @@ let PI:Float = 3.141592654
 
 class ViewController: UIViewController
 {
-    let vertexData:[Float] = [
-        0, 0.5, 0,
-        -0.66667, -0.66667, 0,
-        0.66667, -0.66667, 0
+    //var vertexData:[Float] = [
+    //    0, 0.5, 0,
+    //    -0.66667, -0.66667, 0,
+    //    0.66667, -0.66667, 0
+    //]
+    
+    var glVertexData:[GLKVector3] = [
+        GLKVector3(v: (0.0, 0.5, 0.0)),
+        GLKVector3(v: (-0.66667, -0.66667, 0.0)),
+        GLKVector3(v: (0.66667, -0.66667, 0.0))
     ]
     
     let colorData:[Float] = [
@@ -27,13 +33,9 @@ class ViewController: UIViewController
         0,0,1
     ]
     
-    var scales:[Float] = [ 1,1,1 ]
-    var direction:Double = -1
-    
     var device: MTLDevice! = nil
     var metalLayer: CAMetalLayer! = nil
     
-    var vertexBuffer: MTLBuffer! = nil
     var colorBuffer: MTLBuffer! = nil
     var pipelineState: MTLRenderPipelineState! = nil
     var commandQueue: MTLCommandQueue! = nil
@@ -41,7 +43,8 @@ class ViewController: UIViewController
     var timer: CADisplayLink! = nil
     var last: CFTimeInterval! = nil
     
-    var rot = GLKQuaternionMakeWithAngleAndAxis(PI, 0.707106781186548, 0.707106781186548, 0)
+    //var rot = GLKQuaternionMakeWithAngleAndAxis(PI, 0.707106781186548, 0, 0.707106781186548)
+    var rot = GLKQuaternionMakeWithAngleAndAxis(PI, 0, 0, 1)
     
     override func viewDidLoad()
     {
@@ -59,9 +62,6 @@ class ViewController: UIViewController
         size.height *= view.contentScaleFactor
         metalLayer.drawableSize = size
         view.layer.addSublayer(metalLayer)
-        
-        let vSize = vertexData.count * sizeof(Float)
-        vertexBuffer = device.newBufferWithBytes(vertexData, length: vSize, options:MTLResourceOptions())
         
         let cSize = colorData.count * sizeof(Float)
         colorBuffer = device.newBufferWithBytes(colorData, length: cSize, options: MTLResourceOptions())
@@ -99,21 +99,19 @@ class ViewController: UIViewController
         
         let renderEncoder = commandBuffer.renderCommandEncoderWithDescriptor(renderPassDescriptor)
         renderEncoder.setRenderPipelineState(pipelineState)
-        renderEncoder.setVertexBuffer(vertexBuffer, offset: 0, atIndex: 0)
+        renderEncoder.setVertexBytes(glVertexData, length: glVertexData.count*sizeofValue(glVertexData[0]), atIndex: 0)
         renderEncoder.setVertexBuffer(colorBuffer, offset: 0, atIndex: 1)
-        renderEncoder.setVertexBytes(scales, length: scales.count*sizeof(Float), atIndex: 2)
         renderEncoder.drawPrimitives(.Triangle, vertexStart: 0, vertexCount: 3)
         renderEncoder.endEncoding()
         
         commandBuffer.presentDrawable(drawable!)
         commandBuffer.commit()
         
-        let vec = GLKVector3Make(scales[0], scales[1], scales[2])
-        let rotated = GLKQuaternionRotateVector3(GLKQuaternionSlerp(GLKQuaternionIdentity, rot, Float(delta)), vec)
-        print("Rotated Vector: \(rotated); x:\(rotated.x), y:\(rotated.y), z:\(rotated.z)")
-        scales[0] = rotated.x
-        scales[1] = rotated.y
-        scales[2] = rotated.z
+        //withUnsafeMutablePointer(&vertexData)
+        //{
+        //    GLKQuaternionRotateVector3Array(GLKQuaternionSlerp(GLKQuaternionIdentity, rot, Float(delta)), $0, 3)
+        //}
+        GLKQuaternionRotateVector3Array(GLKQuaternionSlerp(GLKQuaternionIdentity, rot, Float(delta)), &glVertexData, 3)
     }
     
     func tick()
