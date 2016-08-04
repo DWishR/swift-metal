@@ -43,8 +43,8 @@ class ViewController: UIViewController
     var timer: CADisplayLink! = nil
     var last: CFTimeInterval! = nil
     
-    //var rot = GLKQuaternionMakeWithAngleAndAxis(PI, 0.707106781186548, 0, 0.707106781186548)
-    var rot = GLKQuaternionMakeWithAngleAndAxis(PI, 0, 0, 1)
+    let rot = GLKQuaternionMakeWithAngleAndAxis(PI/6, 0.707106781186548, 0, 0.707106781186548)
+    //let rot = GLKQuaternionMakeWithAngleAndAxis(PI/6, 0, 0, 1)
     
     override func viewDidLoad()
     {
@@ -89,6 +89,13 @@ class ViewController: UIViewController
 
     func render(delta:CFTimeInterval)
     {
+        GLKQuaternionRotateVector3Array(GLKQuaternionSlerp(GLKQuaternionIdentity, rot, Float(delta)), &glVertexData, 3)
+        var flatVerts = glVertexData
+        for ii in 0..<flatVerts.count
+        {
+            flatVerts[ii].v = (flatVerts[ii].x, flatVerts[ii].y, 0)
+        }
+        
         let drawable = metalLayer.nextDrawable()
         let renderPassDescriptor = MTLRenderPassDescriptor()
         renderPassDescriptor.colorAttachments[0].texture = drawable!.texture
@@ -96,10 +103,9 @@ class ViewController: UIViewController
         renderPassDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(0.25, 0.25, 0.25, 1)
         
         let commandBuffer = commandQueue.commandBuffer()
-        
         let renderEncoder = commandBuffer.renderCommandEncoderWithDescriptor(renderPassDescriptor)
         renderEncoder.setRenderPipelineState(pipelineState)
-        renderEncoder.setVertexBytes(glVertexData, length: glVertexData.count*sizeofValue(glVertexData[0]), atIndex: 0)
+        renderEncoder.setVertexBytes(flatVerts, length: flatVerts.count*sizeofValue(flatVerts[0]), atIndex: 0)
         renderEncoder.setVertexBuffer(colorBuffer, offset: 0, atIndex: 1)
         renderEncoder.drawPrimitives(.Triangle, vertexStart: 0, vertexCount: 3)
         renderEncoder.endEncoding()
@@ -111,7 +117,6 @@ class ViewController: UIViewController
         //{
         //    GLKQuaternionRotateVector3Array(GLKQuaternionSlerp(GLKQuaternionIdentity, rot, Float(delta)), $0, 3)
         //}
-        GLKQuaternionRotateVector3Array(GLKQuaternionSlerp(GLKQuaternionIdentity, rot, Float(delta)), &glVertexData, 3)
     }
     
     func tick()
